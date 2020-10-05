@@ -76,7 +76,8 @@ function preload(redis, done) {
       fs.readFile(filePath, 'utf-8', function(err, source) {
         redis.send_command('SCRIPT', ['LOAD', source], function(err, _sha) {
           if (err) { return done(err); }
-          if (sha !== _sha) {
+          // _sha can be a Buffer
+          if ((_sha.toLocaleString && _sha.toLocaleString() !== sha) && sha !== _sha) {
             return done(new Error('Incorrect computation of the sha for ' + filePath));
           }
           lazyLoad();
